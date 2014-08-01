@@ -44,10 +44,13 @@ void x264Encoder::unInitilize()
     sws_freeContext(convert_context_);
 }
 
+//Encode the rgb frame into a sequence of NALs unit that are stored in a std::vector
 void x264Encoder::encodeFrame(char *rgb_buffer, int buffer_size)
 {
     const uint8_t * rgb_buffer_slice[1] = {(const uint8_t *)rgb_buffer};
     int stride[1] = { 3 * image_w_ }; // RGB stride
+
+    //Convert the frame from RGB to YUV420
     int slice_size = sws_scale(convert_context_, rgb_buffer_slice, stride, 0, image_h_, picture_in_.img.plane, picture_in_.img.i_stride);
 
     x264_nal_t* nals ;
@@ -62,7 +65,6 @@ void x264Encoder::encodeFrame(char *rgb_buffer, int buffer_size)
         }
     }
 }
-
 
 
 bool x264Encoder::isNalsAvailableInOutputQueue()
